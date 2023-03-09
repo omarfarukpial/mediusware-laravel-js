@@ -4,7 +4,9 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Edit Product</h1>
     </div>
-    <form action="">
+    <form action="{{ route('product.update', $product_info) }}"  method="post">
+        @csrf
+        @method('put')
         <section>
             <div class="row">
                 <div class="col-md-6">
@@ -19,8 +21,9 @@
                                 <input type="text"
                                        name="product_name"
                                        id="product_name"
+                                       value="{{ old('product_name') ?: $product_info->title }}"
                                        required
-                                       placeholder="Product Name"
+                                       
                                        class="form-control">
                             </div>
                             <div class="form-group">
@@ -28,7 +31,7 @@
                                 <input type="text" name="product_sku"
                                        id="product_sku"
                                        required
-                                       placeholder="Product Name"
+                                       value="{{ old('product_sku') ?: $product_info->sku }}"
                                        class="form-control"></div>
                             <div class="form-group mb-0">
                                 <label for="product_description">Description</label>
@@ -36,7 +39,7 @@
                                           id="product_description"
                                           required
                                           rows="4"
-                                          class="form-control"></textarea>
+                                          class="form-control">{{ old('product_description') ?: $product_info->description }}</textarea>
                             </div>
                         </div>
                     </div>

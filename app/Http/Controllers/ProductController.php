@@ -15,7 +15,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('products.index');
+        $Products = Product::paginate(3);
+        return view('products.index', compact('Products'));
     }
 
     /**
@@ -58,10 +59,10 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
+    public function edit($id)
     {
-        $variants = Variant::all();
-        return view('products.edit', compact('variants'));
+        $product_info = Product::findOrFail($id);
+        return view('products.edit', compact('product_info'));
     }
 
     /**
@@ -73,7 +74,10 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $variant = Variant::findOrFail($product);
+        $variant->fill($request->all());
+        $variant->save();
+        return redirect()->back()->with('success', 'Product Updated');
     }
 
     /**
