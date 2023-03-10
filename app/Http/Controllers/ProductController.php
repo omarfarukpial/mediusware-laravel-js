@@ -21,7 +21,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['prices', 'product_variants'])->paginate(3);
+        $products = Product::with(['prices', 'product_variants'])->paginate(10);
         // $product_variants = ProductVariant::all();
         
         $variants = Variant::with('product_variants')->get();
@@ -118,7 +118,6 @@ class ProductController extends Controller
 
     }
 
-
     /**
      * Display the specified resource.
      *
@@ -132,47 +131,7 @@ class ProductController extends Controller
     }
 
     // For Search Purpose
-    public function search(Request $request)
-    {
-       
-
-        // dd('Hello');
-
-
-        $title = $request->title;
-        $variant = $request->variant_id;
-        $price_from = $request->price_from;
-        $price_to = $request->price_to;
-        $date = $request->date;
-        $vp = [$price_from, $price_to, $variant];
-        $product_variants = ProductVariant::all();
-        try{
-            $products = Product::with('prices')->when($title, function ($query, $title) {
-                    return $query->where('title', 'like', '%'.$title.'%');
-                })->when($date, function ($query, $date) {
-                    return $query->whereDate('created_at', $date);
-                })->whereHas('prices', function($q) use($vp){
-
-                    $price_from = $vp[0] ;
-                    $price_to = $vp[1] ;
-                    $variant = $vp[2] ;
-
-                    $q->when($price_from, function ($query, $price_from) {
-                        return $query->where('price', '>=', intval($price_from));
-                    })->when($price_to, function ($query, $price_to) {
-                        return $query->where('price', '<=', intval($price_to));
-                    })->when($variant, function ($query, $variant) {
-                        return $query->whereRaw("(product_variant_one = $variant or product_variant_two = $variant or product_variant_three = $variant)");
-                    });
-                })->paginate(5);
-            $products->appends($request->all());
-
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
-        return view('products.index', compact('products'));
-        
-    }
+    
 
 
     /**
@@ -197,12 +156,39 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        $variant = Variant::findOrFail($product);
-        $variant->fill($request->all());
-        $variant->save();
-        return redirect()->back()->with('success', 'Product Updated');
+        $product = Product::find($id);
+        $product->title = $request->input('product_name');
+        $product->sku = $request->input('product_sku');
+        $product->description = $request->input('product_description');
+        $product->save();
+
+
+        $products = Product::with(['prices', 'product_variants'])->paginate(10);
+        // $product_variants = ProductVariant::all();
+        
+        $variants = Variant::with('product_variants')->get();
+
+        $options = [];
+
+        foreach ($variants as $variant) {
+            $optionGroup = $variant->title;
+            $options[$optionGroup] = [];
+
+            foreach ($variant->product_variants as $productVariant) {
+                $options[$optionGroup][$productVariant->variant] = $productVariant->id;
+            }
+        }
+
+
+      
+
+
+        
+
+        return view('products.index', compact('products', 'variants', 'options'));
+       
     }
 
     /**

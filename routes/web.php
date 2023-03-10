@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductSearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,8 +28,9 @@ Route::post('/dropzone', 'HomeController@index')->name('file-upload');
 Route::middleware('auth')->group(function () {
     Route::resource('product-variant', 'VariantController');
     Route::resource('/product', 'ProductController');
-    Route::post('/product/search', [ProductController::class, 'search'])->name('product.search');
+    Route::post('/product/search', [ProductSearchController::class, 'search'])->name('product.search');
     Route::post('/product/store',[ProductController::class, 'store'])->name('product_store');
+    Route::put('/product/{id}',[ProductController::class, 'update'])->name('product_update');
     Route::resource('blog', 'BlogController');
     Route::resource('blog-category', 'BlogCategoryController');
 });

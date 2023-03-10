@@ -49,7 +49,7 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="form-group">
-                                    <label v-if="product_variant.length != 1" @click="product_variant.splice(index,1); checkVariant"
+                                    <label v-if="product_variant.length != 1" @click="product_variant.splice(index,1); checkVariant()"
                                            class="float-right text-primary"
                                            style="cursor: pointer;">Remove</label>
                                     <label v-else for="">.</label>
@@ -179,14 +179,31 @@ export default {
 
         // store product into database
         saveProduct() {
-            let product = {
-                title: this.product_name,
-                sku: this.product_sku,
-                description: this.description,
-                product_image: this.images,
-                product_variant: this.product_variant,
-                product_variant_prices: this.product_variant_prices
+            // let product = {
+            //     title: this.product_name,
+            //     sku: this.product_sku,
+            //     description: this.description,
+            //     product_image: this.images,
+            //     product_variant: this.product_variant,
+            //     product_variant_prices: this.product_variant_prices
+            // }
+
+            let product = new FormData();
+            product.append('title', this.product_name);
+            product.append('sku', this.product_sku);
+            product.append('description', this.description);
+            for (let x = 0; x < this.images.length; x++){ 
+                product.append('product_image[]', this.images[x]);
             }
+            for (let x = 0; x < this.product_variant.length; x++){ 
+                product.append('product_variant[]', JSON.stringify(this.product_variant[x]));
+            }
+            for (let x = 0; x < this.product_variant_prices.length; x++){ 
+                product.append('product_variant_prices[]', JSON.stringify(this.product_variant_prices[x]));
+            }
+
+            console.log(product)
+
 
 
             axios.post('/product', product).then(response => {

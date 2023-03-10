@@ -83,7 +83,7 @@
                             <td>{{$product->description}}</td>
                             <td>
                                 
-                                <dl class="row mb-0" style="height: 80px; overflow: hidden" id="collapse-{{ $product->id }}">
+                                <dl class="row mb-0 productRow" style="height: 80px; overflow: hidden" id="collapse-{{ $product->id }}">
 
                                     <dt class="col-sm-4 pb-0">
                                         @foreach($product->prices as $price)
@@ -112,7 +112,8 @@
                                     @endforeach
                                     </span>
                                 </dl>
-                                <button onclick="toggleRow({{ $product->id }})" class="btn btn-sm btn-link">Show more</button>
+                                {{-- <button onclick="toggleRow({{ $product->id }})" class="btn btn-sm btn-link">Show more</button> --}}
+                                <button onclick="$('#collapse-{{ $product->id }}').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more</button>
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
@@ -146,13 +147,14 @@
         </div>
         {{-- <div class="clearfix"></div> --}}
       </div>
-
+{{-- 
       <script>
         function toggleRow(productId) {
         var target = '#collapse-' + productId;
         $(target).collapse('toggle');
+        document.getElementById(elementId)
         }
-    </script>
+    </script> --}}
 
       
    
