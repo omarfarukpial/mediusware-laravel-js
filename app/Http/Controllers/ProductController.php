@@ -21,7 +21,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with(['prices', 'product_variants'])->paginate(10);
+        $products = Product::with(['prices', 'product_variants'])->paginate(5);
         // $product_variants = ProductVariant::all();
         
         $variants = Variant::with('product_variants')->get();
@@ -165,7 +165,7 @@ class ProductController extends Controller
         $product->save();
 
 
-        $products = Product::with(['prices', 'product_variants'])->paginate(10);
+        $products = Product::with(['prices', 'product_variants'])->paginate(5);
         // $product_variants = ProductVariant::all();
         
         $variants = Variant::with('product_variants')->get();
