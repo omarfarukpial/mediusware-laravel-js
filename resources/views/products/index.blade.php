@@ -8,15 +8,39 @@
 
 
     <div class="card">
-        <form action="" method="get" class="card-header">
+        <form action="{{route('product.search')}}" method="post" class="card-header">
+            @csrf
             <div class="form-row justify-content-between">
                 <div class="col-md-2">
                     <input type="text" name="title" placeholder="Product Title" class="form-control">
                 </div>
                 <div class="col-md-2">
-                    <select name="variant" id="" class="form-control">
+                    {{-- <select name="variant" id="" class="form-control">
+                        @foreach ($variant_item as $variants)
+                            <optgroup label="{{ dd($variants->variants_func)}}">
+                                @foreach ($variants as $variant)
+                                    <option value="{{ $variant->id }}">{{ $variant->variant }}</option>
+                                @endforeach
+                            </optgroup>
+                        @endforeach
 
+                    </select> --}}
+                  
+                    <select name="variant_id" class="form-control">
+                        <option value="">--Select a variant--</option>
+                    
+                        @foreach ($options as $optionGroup => $optionValues)
+                            <optgroup label="{{ $optionGroup }}">
+                                @foreach ($optionValues as $optionLabel => $optionValue)
+                                    <option value="{{ $optionValue }}">{{ $optionLabel }}</option>
+                                @endforeach
+                            </optgroup>
+                        @endforeach
                     </select>
+                    
+                    
+
+                    
                 </div>
 
                 <div class="col-md-3">
@@ -46,18 +70,50 @@
                         <th>Title</th>
                         <th>Description</th>
                         <th>Variant</th>
-                        <th width="150px">Action</th>
+                        <th width="100px">Action</th>
                     </tr>
                     </thead>
 
                     <tbody>
 
-                        @foreach($Products as $key=>$product)
+                        @foreach($products as $product)
                         <tr>
-                            <td>{{ $key +1 }}</td>
+                            <td>{{ $product->id }}</td>
                             <td>{{ $product->title }} <br>Created at: {{ \Carbon\Carbon::parse($product->created_at)->format('d-M-Y')}}</td>
-                            <td>{{ nl2br($product->description) }}</td>
-                            <td></td>
+                            <td>{{$product->description}}</td>
+                            <td>
+                                
+                                <dl class="row mb-0" style="height: 80px; overflow: hidden" id="collapse-{{ $product->id }}">
+
+                                    <dt class="col-sm-4 pb-0">
+                                        @foreach($product->prices as $price)
+                                        
+                                            @if($price->product_variant_1 !== null)                                                                              
+                                            {{$price->product_variant_1->variant}}/
+                                            @endif
+                                            @if($price->product_variant_2 !== null)
+                                            {{ $price->product_variant_2->variant }}/
+                                            @endif
+                                            @if($price->product_variant_3 !== null)
+                                            {{ $price->product_variant_3->variant}}/
+                                            @endif
+                                            <br>
+                                        @endforeach
+                       
+                                      
+
+                                    </dt>
+                                    <span class="col-sm-8">
+                                    @foreach($product->prices as $price)
+                                        <span class="row mb-0">
+                                            <span class="col-sm-6 pb-0">Price : {{ number_format($price->price,2) }}</span>
+                                            <span class="col-sm-6 pb-0">InStock : {{ number_format($price->stock,2) }}</span>
+                                        </span>
+                                    @endforeach
+                                    </span>
+                                </dl>
+                                <button onclick="toggleRow({{ $product->id }})" class="btn btn-sm btn-link">Show more</button>
+                            </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
                                     <a href="{{ route('product.edit',$product) }}" class="btn btn-primary">Edit</a>
@@ -83,13 +139,20 @@
     </div>
     <div class="pagination mt-2" style="display: flex; justify-content: space-between; align-items: center;">
         <div class="float-left">
-          Showing {{ $Products->firstItem() }} to {{ $Products->lastItem() }} of {{ $Products->total() }}
+          Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of {{ $products->total() }}
         </div>
         <div class="float-right" style="display: flex; align-items: center;">
-          {{ $Products->links() }}
+          {{ $products->links() }}
         </div>
         {{-- <div class="clearfix"></div> --}}
       </div>
+
+      <script>
+        function toggleRow(productId) {
+        var target = '#collapse-' + productId;
+        $(target).collapse('toggle');
+        }
+    </script>
 
       
    
